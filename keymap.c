@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_GESC, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,      KC_BSPC,
     KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,   KC_ENT,
     KC_LSPO, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,   KC_RSPC,
-    MT(MOD_LCTL, KC_LBRC), KC_LGUI, KC_LALT, LT(_NAV, KC_LEFT),  LT(_LOWER, KC_DOWN),   KC_SPC,  KC_SPC,  LT(_RAISE, KC_UP), LT(_NAV, KC_RGHT), KC_RALT, KC_RGUI, MT(MOD_RCTL, KC_RBRC)
+    KC_LCTL, KC_LGUI, KC_LALT, LT(_NAV, KC_LEFT),  LT(_LOWER, KC_DOWN),   KC_SPC,  KC_SPC,  LT(_RAISE, KC_UP), LT(_NAV, KC_RGHT), KC_RALT, KC_RGUI, KC_RCTL
 ),
 
 [_MAC] = LAYOUT_planck_grid(
@@ -51,7 +51,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [_LOWER] = LAYOUT_planck_grid(
     KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSLS,
-    _______, _______, _______, _______, _______, _______, _______, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_QUOT,
+    CAPSWRD, _______, _______, _______, _______, _______, _______, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_QUOT,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
@@ -97,13 +97,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         set_single_persistent_default_layer(_WINDOWS);
       }
       return false;
-      break;
     case MAC:
       if (record->event.pressed) {
         set_single_persistent_default_layer(_MAC);
       }
       return false;
-      break;
   }
   return true;
 }
+
+enum combos { LSFTRSFT_CAPSLOCK, COMBO_LENGTH };
+uint16_t COMBO_LEN = COMBO_LENGTH;
+
+/*
+Tapping both left and right shift toggles CAPS_WORD
+Even though QMK provides `#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD`
+Tapping both shifts causes a 0 or 9 to be outputted as well
+Using combos prevents that
+*/
+const uint16_t PROGMEM lsftrsft_capslock_combo[] = {KC_LSPO, KC_RSPC, COMBO_END}; 
+combo_t key_combos[] = { 
+  [LSFTRSFT_CAPSLOCK] = COMBO(lsftrsft_capslock_combo, CAPS_WORD), 
+};

@@ -2,6 +2,7 @@
 
 #define GRAVE_ESC_CTRL_OVERRIDE // Always send Escape if Shift is pressed, so that Ctrl + Shift + Esc works
 #define HOLD_ON_OTHER_KEY_PRESS
+#define CAPS_WORD_IDLE_TIMEOUT 2000 
 
 #ifdef AUDIO_ENABLE
     #define STARTUP_SONG SONG(PLANCK_SOUND)
