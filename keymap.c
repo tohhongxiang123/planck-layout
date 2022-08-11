@@ -32,7 +32,8 @@ enum planck_layers {
 
 enum planck_keycodes {
   QWERTY = SAFE_RANGE,
-  MAC
+  MAC,
+  PRINT_SCREEN
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -68,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_NAV] = LAYOUT_planck_grid(
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, KC_HOME, KC_PGDN, KC_PGUP, KC_END,  _______, _______, LCTL(KC_LEFT), LCTL(KC_DOWN), LCTL(KC_UP), LCTL(KC_RIGHT), _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_VOLD, KC_VOLU, KC_MUTE, _______,
+    _______, _______, _______, _______, PRINT_SCREEN, _______, _______, _______, KC_VOLD, KC_VOLU, KC_MUTE, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
 
@@ -92,16 +93,32 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST); // lower + raise = adjust layer
 }
 
+enum default_layers {
+  DEFAULT_WINDOWS,
+  DEFAULT_MAC
+};
+uint8_t current_default_layer = DEFAULT_WINDOWS;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
         set_single_persistent_default_layer(_WINDOWS);
+        current_default_layer = DEFAULT_WINDOWS;
       }
       return false;
     case MAC:
       if (record->event.pressed) {
         set_single_persistent_default_layer(_MAC);
+        current_default_layer = DEFAULT_MAC;
+      }
+      return false;
+    case PRINT_SCREEN:
+      if (record->event.pressed) {
+        if (current_default_layer == DEFAULT_MAC) {
+          tap_code16(G(S(C(KC_4)))); // LGUI(LSFT(LCTL(KC_4)))
+        } else {
+          tap_code16(G(S(KC_S))); // LGUI(LSFT(KC_S))
+        }
       }
       return false;
   }
